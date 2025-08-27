@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Assistente de Produtividade — Janelas Livres</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Interact.js para drag + resize -->
+  <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <h1>✨ Assistente de Produtividade</h1>
+    <nav class="header-actions">
+      <!-- Switch de notificações -->
+      <label class="switch" title="Notificações">
+        <input type="checkbox" id="toggleNotif">
+        <span class="slider" data-on="🔔" data-off="🔕"></span>
+      </label>
+      <!-- Switch de tema -->
+      <label class="switch" title="Tema claro/escuro">
+        <input type="checkbox" id="toggleTheme">
+        <span class="slider" data-on="🌞" data-off="🌙"></span>
+      </label>
+      <button id="btnExportICS" title="Exportar calendário (.ics)">📤 Exportar</button>
+      <label class="file-label" title="Importar calendário (.ics)">📥 Importar
+        <input id="inputICS" type="file" accept=".ics,text/calendar">
+      </label>
+    </nav>
+  </header>
+
+  <!-- Área de janelas (position: relative) -->
+  <main id="stage" class="stage">
+    <!-- Janela: Minhas Tarefas -->
+    <div class="window" id="winTasks" data-win="tasks">
+      <div class="win-header">📋 Minhas Tarefas</div>
+      <div class="win-body">
+        <form id="formTask" class="form-grid">
+          <input id="taskTitle" type="text" placeholder="Título da tarefa" required>
+          <input id="taskDue" type="datetime-local" title="Prazo (opcional)">
+          <input id="taskDuration" type="number" min="5" step="5" placeholder="Duração (min)">
+          <select id="taskImportance" title="Importância">
+            <option value="3" selected>Imp:3</option>
+            <option>1</option><option>2</option><option>4</option><option>5</option>
+          </select>
+          <input id="taskCategory" type="text" placeholder="Categoria">
+          <input id="taskFile" type="file" title="Anexar arquivo (opcional)">
+          <button type="submit" class="primary" title="Adicionar tarefa">➕</button>
+        </form>
+
+        <div class="task-filters">
+          <input id="searchTask" type="search" placeholder="🔍 Buscar...">
+          <select id="filterStatus">
+            <option value="all">Todas</option>
+            <option value="open" selected>Abertas</option>
+            <option value="done">Concluídas</option>
+          </select>
+          <select id="sortTasks">
+            <option value="priority" selected>Prioridade</option>
+            <option value="due">Prazo</option>
+            <option value="created">Criadas</option>
+          </select>
+          <button id="btnAutoPlan" class="accent">⚡ Plano do dia</button>
+        </div>
+
+        <ul id="taskList" class="task-list"></ul>
+      </div>
+    </div>
+
+    <!-- Janela: Agenda -->
+    <div class="window" id="winCalendar" data-win="calendar">
+      <div class="win-header">🗓️ Agenda</div>
+      <div class="win-body">
+        <div class="calendar-controls">
+          <button id="prevDay">◀</button>
+          <input id="currentDay" type="date">
+          <button id="nextDay">▶</button>
+        </div>
+        <div id="calendarGrid" class="calendar-grid"></div>
+      </div>
+    </div>
+
+    <!-- Janela: Notas / Resumo -->
+    <div class="window" id="winNotes" data-win="notes">
+      <div class="win-header">🧠 Resumo de Reuniões</div>
+      <div class="win-body">
+        <textarea id="meetingNotes" rows="8" placeholder="Cole aqui suas notas de reunião..."></textarea>
+        <div class="meeting-actions">
+          <button id="btnSummarize" class="primary">📝 Resumir</button>
+          <button id="btnClearNotes" class="ghost">Limpar</button>
+        </div>
+        <div id="summaryOutput" class="summary-output">
+          <h3>Resumo</h3>
+          <ul id="summaryBullets"></ul>
+          <h3>Ações Detectadas</h3>
+          <ul id="actionItems"></ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Janela: Pomodoro -->
+    <div class="window" id="winPomodoro" data-win="pomodoro">
+      <div class="win-header">🍅 Pomodoro</div>
+      <div class="win-body">
+        <div class="pom-controls">
+          <label>Trabalho <input id="pomWork" type="number" min="5" value="25"> min</label>
+          <label>Pausa curta <input id="pomShort" type="number" min="1" value="5"> min</label>
+          <label>Pausa longa <input id="pomLong" type="number" min="5" value="15"> min</label>
+        </div>
+        <div class="pom-timer" id="pomTimer">25:00</div>
+        <div class="pom-actions">
+          <button id="pomStart">▶ Iniciar</button>
+          <button id="pomPause" class="ghost">❚❚ Pausar</button>
+          <button id="pomReset" class="ghost">⟲ Resetar</button>
+          <div class="pom-status" id="pomStatus">Sessões: <span id="pomCount">0</span></div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="app-footer">
+    <small>Matheus Oliveira • 2025</small>
+  </footer>
+
+  <!-- Modal / preview arquivo -->
+  <div id="modalOverlay" class="modal-overlay" aria-hidden="true">
+    <div class="modal">
+      <button id="modalClose" class="modal-close">✖</button>
+      <div id="modalContent" class="modal-content"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

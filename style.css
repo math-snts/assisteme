@@ -1,0 +1,134 @@
+/* ---- Tema (tons de cinza padrão do modo noturno) ---- */
+:root{
+  --bg:#0f111a;         /* fundo geral (dark slate) */
+  --card:#1a1d2d;       /* cartões/janelas */
+  --text:#f5f6fa;       /* texto principal */
+  --muted:#8a93ad;      /* texto secundário/cinza */
+  --accent:#7aa2ff;     /* azul destaque */
+  --accent-2:#23d2a4;   /* verde água */
+  --warn:#ff4d6d;       /* alerta */
+  --border:#242841;     /* borda/linhas */
+}
+[data-theme="light"]{
+  --bg:#f7f9fc;
+  --card:#ffffff;
+  --text:#0e1220;
+  --muted:#555b70;
+  --accent:#3366ff;
+  --accent-2:#1fcaa0;
+  --warn:#ff3344;
+  --border:#e0e4ee;
+}
+
+/* ---- Reset/estrutura ---- */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column}
+.app-header,.app-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--card);border-bottom:1px solid var(--border)}
+.app-footer{border-top:1px solid var(--border);font-size:.9rem;color:var(--muted)}
+.header-actions{display:flex;gap:10px;align-items:center}
+
+/* ---- Switches (notificação/tema) ---- */
+.switch{position:relative;display:inline-flex;align-items:center}
+.switch input{display:none}
+.switch .slider{
+  width:48px;height:28px;border-radius:999px;border:1px solid var(--border);
+  background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.04));
+  display:inline-flex;align-items:center;justify-content:center;
+  font-size:16px;user-select:none;cursor:pointer;transition:background .2s, color .2s;
+  color:var(--muted);
+  position:relative;
+}
+.switch .slider::before{
+  content:"";position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;
+  background:var(--border);transition:transform .2s ease;
+}
+.switch input:checked + .slider{color:#fff;background:var(--accent)}
+.switch input:checked + .slider::before{transform:translateX(20px)}
+/* Mostra emoji adequado */
+.switch .slider::after{
+  content:attr(data-off);
+  position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+}
+.switch input:checked + .slider::after{content:attr(data-on)}
+
+/* ---- Stage e janelas ---- */
+.stage{position:relative;flex:1;overflow:hidden;padding:12px}
+.window{
+  position:absolute;left:20px;top:20px;width:360px;height:420px;
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  box-shadow:0 12px 30px rgba(0,0,0,.45);
+  display:flex;flex-direction:column;overflow:hidden;transition:box-shadow .12s;
+  touch-action:none; /* necessário para drag no mobile */
+}
+.window:active{box-shadow:0 18px 42px rgba(0,0,0,.6)}
+.win-header{
+  background:linear-gradient(180deg, rgba(255,255,255,0.04), transparent);
+  padding:10px 12px;font-weight:600;cursor:grab;border-bottom:1px solid rgba(255,255,255,0.06);
+  user-select:none;
+}
+.win-header:active{cursor:grabbing}
+.win-body{padding:12px;overflow:auto;flex:1;display:flex;flex-direction:column;gap:10px}
+
+/* ---- Form tarefas ---- */
+.form-grid{display:grid;grid-template-columns:1fr 1fr 1fr .8fr 1fr auto;gap:8px}
+.form-grid input[type="file"]{padding:6px}
+.task-filters{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+button, input, select, textarea{
+  background:transparent;color:var(--text);border:1px solid var(--border);
+  border-radius:8px;padding:8px 10px;outline:none
+}
+button{cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.accent{background:var(--accent-2);border-color:var(--accent-2);color:#0b1323}
+button.ghost{background:transparent;color:var(--muted)}
+.file-label{border:1px dashed var(--border);padding:6px;border-radius:8px}
+
+/* ---- Lista de tarefas ---- */
+.task-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.task{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.03);padding:8px;border-radius:8px;gap:8px}
+.task.done{opacity:.55;text-decoration:line-through}
+.task span.title{font-weight:600;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.task .due.ok{color:var(--accent-2);font-size:.85rem}
+.task .due.warn{color:var(--warn);font-size:.85rem}
+.attach-mini{margin-left:8px;font-size:0.95rem;opacity:.9}
+
+/* ---- Agenda ---- */
+.calendar-controls{display:flex;gap:8px;align-items:center;margin-bottom:6px}
+.calendar-grid{display:grid;grid-template-columns:80px 1fr;gap:0;border-top:1px solid var(--border)}
+.slot-label{padding:6px;color:var(--muted);font-size:.8rem;border-bottom:1px solid var(--border)}
+.slot{border-bottom:1px solid var(--border);min-height:40px;padding:6px;position:relative}
+.event{background:var(--accent);color:white;padding:4px 8px;border-radius:6px;font-size:.85rem;margin:4px 0;display:inline-block}
+.event.done{background:#ddd;color:#222;opacity:0.95}
+.slot.now{outline:2px dashed var(--accent-2);outline-offset:-2px}
+
+/* ---- Notas ---- */
+#meetingNotes{resize:vertical;min-height:100px}
+.meeting-actions{display:flex;gap:8px;margin:10px 0}
+.summary-output h3{font-size:1rem;margin:6px 0}
+.summary-output ul{margin-bottom:8px;padding-left:16px}
+
+/* ---- Pomodoro ---- */
+.pom-controls label{display:flex;gap:6px;align-items:center}
+.pom-timer{font-size:2rem;text-align:center;margin:8px 0}
+.pom-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+
+/* ---- Modal preview ---- */
+.modal-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,0.6);z-index:9999}
+.modal-overlay.show{display:flex}
+.modal{background:var(--card);border-radius:10px;padding:12px;max-width:90%;max-height:90%;width:760px;box-shadow:0 20px 60px rgba(0,0,0,.6);overflow:auto;position:relative}
+.modal-close{position:absolute;right:8px;top:8px;background:transparent;border:none;color:var(--muted);font-size:1.1rem;cursor:pointer}
+.modal-content img{max-width:100%;height:auto;display:block;margin:0 auto}
+.modal-content iframe{width:100%;height:70vh;border:0}
+
+/* ---- Toast ---- */
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);opacity:0;background:var(--card);color:var(--text);border:1px solid var(--border);padding:10px 14px;border-radius:10px;box-shadow:0 6px 20px rgba(0,0,0,.35);transition:.25s;pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+
+/* ---- Responsivo ---- */
+@media (max-width:900px){
+  .window{position:relative;width:auto;height:auto;border-radius:12px;box-shadow:none;left:auto;top:auto;margin-bottom:12px}
+  .stage{padding:8px}
+  .win-header{cursor:default}
+  .modal{width:95%}
+}
